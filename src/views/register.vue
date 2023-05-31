@@ -30,9 +30,10 @@
 </template>
   
 <script>
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonBackButton, IonAvatar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonBackButton, IonAvatar, IonItem, IonLabel, IonInput, IonButton, toastController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import axios from 'axios';
+
 export default defineComponent({
     components: {
         IonContent,
@@ -63,11 +64,27 @@ export default defineComponent({
             } else if (this.inputPass === '') {
                 this.showAlert('Enter a valid password!');
             } else {
-                axios.post().then
+                axios.post("http://localhost/crud/signup.php", null, { params: { "name_": this.inputName, "username": this.inputUser, "passcode": this.inputPass } })
+                    .then((response) => {
+                        if (response.data.message) {
+                            this.toastMessage(response.data.message);
+                        }
+                    })
+                    .catch(function (error) {
+                        alert(error);
+                    });
             }
         },
         showAlert(message) {
             window.alert(message);
+        },
+        async toastMessage(txt) {
+            const toast = await toastController.create({
+                message: txt.toString(),
+                duration: 5000
+            });
+
+            return toast.present();
         }
     }
 });
@@ -79,6 +96,5 @@ ion-avatar {
     margin: auto;
     width: 60px;
     height: 70px;
-
 }
 </style>
