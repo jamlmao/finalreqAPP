@@ -67,6 +67,11 @@ export default defineComponent({
                 axios.post("http://localhost/crud/signup.php", null, { params: { "name_": this.inputName, "username": this.inputUser, "passcode": this.inputPass } })
                     .then((response) => {
                         if (response.data.message) {
+                            this.inputName = "";
+                            this.inputUser = "";
+                            this.inputPass = "";
+
+
                             this.toastMessage(response.data.message);
                             this.toastMessage("Your account has been recorded!")
                         } else {
