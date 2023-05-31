@@ -68,6 +68,9 @@ export default defineComponent({
                     .then((response) => {
                         if (response.data.message) {
                             this.toastMessage(response.data.message);
+                            this.toastMessage("Your account has been recorded!")
+                        } else {
+                            this.toastMessage("Unexpected Error!")
                         }
                     })
                     .catch(function (error) {
