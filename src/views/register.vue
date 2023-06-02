@@ -3,7 +3,7 @@
         <ion-header>
             <ion-toolbar color="primary">
                 <ion-buttons slot="start">
-                    <ion-back-button default-href="/"></ion-back-button>
+                    <ion-back-button default-href="/login"></ion-back-button>
                 </ion-buttons>
                 <ion-title>Sign Up</ion-title>
             </ion-toolbar>
@@ -25,14 +25,16 @@
                 <ion-input type="password" v-model="inputPass" placeholder="Password"></ion-input>
             </ion-item>
             <ion-button shape="round" expand="full" @click="register()">Submit</ion-button>
+
         </ion-content>
     </ion-page>
 </template>
   
-<script>
+<script lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonBackButton, IonAvatar, IonItem, IonLabel, IonInput, IonButton, toastController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     components: {
@@ -47,6 +49,14 @@ export default defineComponent({
         IonLabel,
         IonInput,
         IonButton
+    }, setup() {
+        const router = useRouter();
+
+        const navigateToOtherPage = () => {
+            router.push('/login'); // Replace '/other-page' with the actual path of the desired page
+        }; return {
+            navigateToOtherPage
+        };
     },
     data() {
         return {
@@ -58,11 +68,11 @@ export default defineComponent({
     methods: {
         register() {
             if (this.inputName === '') {
-                this.showAlert('Enter a valid name!');
+                this.toastMessage('Enter a valid name!');
             } else if (this.inputUser === '') {
-                this.showAlert('Enter a valid username!');
+                this.toastMessage('Enter a valid username!');
             } else if (this.inputPass === '') {
-                this.showAlert('Enter a valid password!');
+                this.toastMessage('Enter a valid password!');
             } else {
                 axios.post("http://localhost/crud/signup.php", null, { params: { "name_": this.inputName, "username": this.inputUser, "passcode": this.inputPass } })
                     .then((response) => {
@@ -72,10 +82,10 @@ export default defineComponent({
                             this.inputPass = "";
 
 
-                            this.toastMessage(response.data.message);
-                            this.toastMessage("Your account has been recorded!")
+
+                            this.toastMessage_alert("Your account has been recorded!")
                         } else {
-                            this.toastMessage("Unexpected Error!")
+                            this.toastMessage_alert("Unexpected Error!")
                         }
                     })
                     .catch(function (error) {
@@ -83,13 +93,30 @@ export default defineComponent({
                     });
             }
         },
-        showAlert(message) {
-            window.alert(message);
-        },
         async toastMessage(txt) {
             const toast = await toastController.create({
                 message: txt.toString(),
-                duration: 5000
+                duration: 5000,
+                buttons: [{
+                    side: 'end',
+                    text: 'Close',
+                    role: 'cancel'
+                }],
+                position: 'top'
+            });
+
+            return toast.present();
+        }, async toastMessage_alert(txt) {
+            const toast = await toastController.create({
+                message: txt.toString(),
+                duration: 5000,
+                buttons: [
+                    {
+                        side: 'end',
+                        text: 'Go to Login Page',
+                        handler: this.navigateToOtherPage
+                    }],
+                position: 'top'
             });
 
             return toast.present();

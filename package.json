@@ -22,7 +22,8 @@
     "axios": "^1.4.0",
     "ionicons": "^7.0.0",
     "vue": "^3.2.45",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vue3-toast-notification": "^0.0.3"
   },
   "devDependencies": {
     "@capacitor/cli": "5.0.4",
