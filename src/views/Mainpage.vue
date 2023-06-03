@@ -32,6 +32,16 @@
                 </ion-item>
             </ion-list>
 
+            <ion-list>
+                <ion-item>
+                    <ion-icon :src="homeOutline" size="large"></ion-icon>
+                    <ion-button expand="block" size="default" href="/">
+                        <ion-label>
+                            Go back
+                        </ion-label>
+                    </ion-button>
+                </ion-item>
+            </ion-list>
 
 
         </ion-content>
@@ -44,10 +54,19 @@
                 <ion-buttons slot="start">
                     <ion-menu-button></ion-menu-button>
                 </ion-buttons>
-                <ion-title>Main Page</ion-title> <!--edit name of app-->
+                <ion-title>Rent'n Go</ion-title> <!--edit name of app-->
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+            <center>
+                <ion-avatar>
+                    <img src="/assets/logo2.png">
+                </ion-avatar>
+                <ion-text>
+                    <h1>Car List</h1>
+                </ion-text>
+            </center>
+
 
         </ion-content>
 
@@ -57,9 +76,16 @@
   
 <script setup lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRouterOutlet, IonMenuButton, IonMenu, IonButton } from '@ionic/vue';
-import { logInOutline, personAddOutline, shieldHalf } from 'ionicons/icons';
+import { logInOutline, personAddOutline, shieldHalf, homeOutline } from 'ionicons/icons';
 
 
 </script>
   
-<style scoped></style>
+<style scoped>
+ion-avatar {
+    --border-radius: 4px;
+    margin-top: 20px;
+    width: 75%;
+    height: 100%;
+}
+</style>

@@ -13,7 +13,7 @@
         <ion-content class="ion-padding">
             <center>
                 <ion-avatar>
-                    <img src="/assets/logo.png">
+                    <img src="/assets/logo2.png">
                 </ion-avatar>
             </center>
 
@@ -80,8 +80,15 @@ export default defineComponent({
                 axios.post("http://localhost/crud/login.php", null, { params: { "username": this.inputUsername, "passcode": this.inputPassword } })
                     .then((response) => {
                         if (response.data.message == "success") {
-                            alert("Login Successfully! ")
-                            this.$router.push('/main:id');
+                            if (response.data.accountType == "admin") {
+                                alert("Login Successfully!")
+                                alert(response.data.accountType)
+                                this.$router.push('/main:id');
+                            } else {
+                                alert("Hello Admin!")
+                                this.$router.push('/main:id');
+                            }
+
                         } else {
                             alert("Invalid Username or Password!")
                         }
@@ -115,7 +122,7 @@ export default defineComponent({
 ion-avatar {
     --border-radius: 4px;
     margin-top: 20px;
-    width: 50%;
-    height: 75%;
+    width: 75%;
+    height: 100%;
 }
 </style>
