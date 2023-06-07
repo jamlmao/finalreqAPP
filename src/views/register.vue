@@ -106,16 +106,19 @@ export default defineComponent({
             });
 
             return toast.present();
-        }, async toastMessage_alert(txt) {
+        },
+        // handler: this.navigateToOtherPage
+
+        async toastMessage_alert(txt) {
             const toast = await toastController.create({
                 message: txt.toString(),
                 duration: 5000,
-                buttons: [
-                    {
-                        side: 'end',
-                        text: 'Go to Login Page',
-                        handler: this.navigateToOtherPage
-                    }],
+                buttons: [{
+                    side: 'end',
+                    text: 'Close',
+                    role: 'cancel',
+                    handler: this.navigateToOtherPage
+                }],
                 position: 'top'
             });
 

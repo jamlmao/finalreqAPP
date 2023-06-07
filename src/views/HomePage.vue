@@ -37,7 +37,7 @@
             </ion-button>
 
 
-            <ion-button color="success" expand="block" size="default" href="/reg">
+            <ion-button color="medium" expand="block" size="default" href="/reg">
               <ion-lable>
                 <p>Create Account</p>
               </ion-lable>

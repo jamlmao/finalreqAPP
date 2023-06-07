@@ -67,7 +67,7 @@
                 </ion-text>
             </center>
             <ion-list>
-                <ion-item-group v-for="item, i in cars.Car" v-bind:key="item" @click="goToCarInfo(item.id)">
+                <ion-item-sliding v-for="item, i in cars.Car" v-bind:key="item">
                     <ion-item :href="`${'/view/' + item.id}`" lines="full" detail="true" button>
                         <ion-chip :outline="true" color="primary" slot="start">
                             {{ i + 1 }}
@@ -75,7 +75,16 @@
                         <ion-label>{{ item.model }}<br /><small>{{ item.brand }}</small><br /><small>{{
                             item.plateNum }}</small></ion-label>
                     </ion-item>
-                </ion-item-group>
+                    <ion-item-options>
+                        <ion-button @click="goToCarInfo(item.id)" color="success">
+                            <ion-icon slot="icon-only" :src="eye"></ion-icon>
+                        </ion-button>
+                        <ion-button color="danger" @click="goToCarRent(item.id)"><ion-icon slot="icon-only"
+                                :src="carSport"></ion-icon></ion-button>
+                    </ion-item-options>
+
+
+                </ion-item-sliding>
             </ion-list>
 
 
@@ -88,10 +97,11 @@
   
 <script setup lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRouterOutlet, IonMenuButton, IonMenu, IonButton, alertController } from '@ionic/vue';
-import { logInOutline, personAddOutline, shieldHalf, homeOutline, pencil, trash } from 'ionicons/icons';
+import { logInOutline, personAddOutline, shieldHalf, homeOutline, eye, carSport } from 'ionicons/icons';
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import router from '@/router';
 
 const cars = reactive({
     Car: []
@@ -119,14 +129,18 @@ function loadRecord() {
         });
 }
 
-onMounted(() => {
-    loadRecord();
-});
-
 
 function goToCarInfo(carId) {
     router.push(`/view/${carId}`);
 }
+function goToCarRent(carId) {
+    router.push(`/rent/${carId}`);
+}
+
+onMounted(() => {
+    loadRecord();
+});
+
 
 
 </script>

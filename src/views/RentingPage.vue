@@ -1,59 +1,10 @@
 <template>
-    <ion-menu content-id="main-content">
-        <ion-header>
-            <ion-toolbar color="primary">
-                <ion-text> Good Day Gearheads!</ion-text>
-            </ion-toolbar>
-        </ion-header>
-
-        <ion-content class="ion-padding">
-
-            <ion-list>
-                <ion-item>
-                    <ion-icon :src="logInOutline" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" href="/">
-                        <ion-label>
-                            Main Menu
-                        </ion-label>
-                    </ion-button>
-                </ion-item>
-            </ion-list>
-
-
-
-            <ion-list>
-                <ion-item>
-                    <ion-icon :src="shieldHalf" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" href="/">
-                        <ion-label>
-                            Profile
-                        </ion-label>
-                    </ion-button>
-                </ion-item>
-            </ion-list>
-
-            <ion-list>
-                <ion-item>
-                    <ion-icon :src="homeOutline" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" href="/main">
-                        <ion-label>
-                            Go back
-                        </ion-label>
-                    </ion-button>
-                </ion-item>
-            </ion-list>
-
-
-        </ion-content>
-    </ion-menu>
-
-
     <ion-page id="main-content">
         <ion-header>
             <ion-toolbar color="primary">
-                <ion-buttons slot="start">
-                    <ion-menu-button></ion-menu-button>
-                </ion-buttons>
+                <ion-button slot="start" href="/main">
+                    <ion-icon :src="chevronBack"></ion-icon>
+                </ion-button>
                 <ion-title>Rent'n Go</ion-title>
             </ion-toolbar>
         </ion-header>
@@ -64,19 +15,21 @@
                     <img src="/assets/logo.png">
                 </ion-avatar>
             </center>
-
             <ion-card color="secondary">
                 <ion-card-content>
                     <ion-item lines="full">
                         <ion-item>
-                            <h3>Brand: {{ carmodel.brand }}</h3>
+                            <ion-text>Brand: {{ carmodel.brand }}</ion-text>
                         </ion-item>
-                        <ion-item>
+                        <ion-item lines="full">
                             <h3>Model: {{ carmodel.model }}</h3>
                         </ion-item>
                     </ion-item>
                 </ion-card-content>
             </ion-card>
+
+
+
 
 
             <ion-card v-if="carInfo" color="secondary">
@@ -102,6 +55,11 @@
                 </ion-card-content>
             </ion-card>
 
+            <ion-button v-if="carInfo" expand="block" size="default" @click="handleRentButton" :disabled="buttonDisabled">
+                <ion-label>
+                    {{ rentButtonLabel }}
+                </ion-label>
+            </ion-button>
 
         </ion-content>
 
@@ -110,7 +68,7 @@
 </template>
 <script setup lang="ts">
 import { IonPage, IonContent, IonCard, IonCardHeader, IonCardContent, IonItem, IonText } from '@ionic/vue';
-import { logInOutline, personAddOutline, shieldHalf, homeOutline, pencil, trash } from 'ionicons/icons';
+import { logInOutline, personAddOutline, shieldHalf, homeOutline, chevronBack } from 'ionicons/icons';
 import { onMounted, reactive, ref, watch } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -137,8 +95,6 @@ const carmodel = reactive({
 });
 
 
-
-
 function getCarInfo() {
     axios.get("http://localhost/crud/car_details.php", { params: { recordid: id } })
         .then((response) => {
@@ -148,7 +104,7 @@ function getCarInfo() {
             carInfo.transmission = car.transmission;
             carInfo.seatcap = car.seatcap;
             carInfo.fueltype = car.fueltype;
-
+            setRentButtonLabel();
             if (sessionStorage.getItem('rentedCar')) {
                 buttonDisabled.value = true;
                 carInfo.status = 'Occupied';
@@ -158,7 +114,6 @@ function getCarInfo() {
             console.error(error);
         });
 }
-
 
 
 
@@ -174,11 +129,62 @@ function getCar() {
         });
 }
 
+function handleRentButton() {
+    if (carInfo.status !== 'Available') {
+        unrentCar();
+    } else {
+        rentCar();
+    }
+}
+function rentCar() {
+    buttonDisabled.value = true;
+    axios.post("http://localhost/crud/car_status.php", { carID: id, status: 'Occupied' })
+        .then((response) => {
+            carInfo.status = 'Occupied';
+            setRentButtonLabel();
+            console.log(response.data);
+        })
+        .catch((error) => {
+            console.error(error);
+        })
+        .finally(() => {
+            buttonDisabled.value = false;
+        });
+
+}
+
+function unrentCar() {
+    buttonDisabled.value = true;
+    axios.post("http://localhost/crud/car_status.php", { carID: id, status: 'Available' })
+        .then((response) => {
+            carInfo.status = 'Available';
+            setRentButtonLabel();
+            console.log(response.data);
+        })
+        .catch((error) => {
+            console.error(error);
+        })
+        .finally(() => {
+            buttonDisabled.value = false;
+        });
+
+    sessionStorage.removeItem('rentedCar');
+}
+
+
+function setRentButtonLabel() {
+    rentButtonLabel = carInfo.status === 'Occupied' ? 'Unrent' : 'Rent';
+}
+
+watch(carInfo, () => {
+    buttonDisabled.value = carInfo.status === 'Occupied';
+});
 
 onMounted(() => {
     getCarInfo();
     getCar();
 });
+
 
 
 

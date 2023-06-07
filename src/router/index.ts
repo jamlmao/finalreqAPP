@@ -5,11 +5,12 @@ import login from '../views/LoginPage.vue'
 import register from '../views/register.vue'
 import MainPage from '../views/Mainpage.vue'
 import ViewPage from '../views/Viewpage.vue'
+import RentingPage from '../views/RentingPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/Login'
   },
   {
     path: '/home',
@@ -35,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/view/:id',
     name: 'View',
     component: ViewPage
+  },
+  {
+    path: '/rent/:id',
+    name: 'rent',
+    component: RentingPage
   }
 ]
 
