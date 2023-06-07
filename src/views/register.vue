@@ -22,7 +22,7 @@
             </ion-item>
             <ion-item>
                 <ion-label position="floating">Password:</ion-label>
-                <ion-input type="password" v-model="inputPass" placeholder="Password"></ion-input>
+                <ion-input type="text" v-model="inputPass" placeholder="Password"></ion-input>
             </ion-item>
             <ion-button shape="round" expand="full" @click="register()">Submit</ion-button>
 
@@ -53,7 +53,7 @@ export default defineComponent({
         const router = useRouter();
 
         const navigateToOtherPage = () => {
-            router.push('/login'); // Replace '/other-page' with the actual path of the desired page
+            router.push('/login');
         }; return {
             navigateToOtherPage
         };

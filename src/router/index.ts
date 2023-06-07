@@ -4,6 +4,7 @@ import HomePage from '../views/HomePage.vue'
 import login from '../views/LoginPage.vue'
 import register from '../views/register.vue'
 import MainPage from '../views/Mainpage.vue'
+import ViewPage from '../views/Viewpage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -26,9 +27,14 @@ const routes: Array<RouteRecordRaw> = [
     component: register
   },
   {
-    path: '/main:id',
+    path: '/main',
     name: 'Main',
     component: MainPage
+  },
+  {
+    path: '/view/:id',
+    name: 'View',
+    component: ViewPage
   }
 ]
 

@@ -13,7 +13,7 @@
         <ion-content class="ion-padding">
             <center>
                 <ion-avatar>
-                    <img src="/assets/logo2.png">
+                    <img src="/assets/logo.png">
                 </ion-avatar>
             </center>
 
@@ -39,10 +39,11 @@
 
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonBackButton, IonAvatar, IonItem, IonLabel, IonInput, IonToast, IonButton, toastController } from '@ionic/vue';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonBackButton, IonAvatar, IonItem, IonInput, IonToast, IonButton, toastController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import axios from 'axios';
 import { logInOutline, personAddOutline, chevronBack, person, lockClosed } from 'ionicons/icons';
+import { RouteRecord } from 'vue-router';
 
 export default defineComponent({
     components: {
@@ -54,23 +55,24 @@ export default defineComponent({
         IonBackButton,
         IonAvatar,
         IonItem,
-        IonLabel,
         IonInput,
         IonButton,
-        IonButton,
         IonToast
-    }, data() {
+    },
+    data() {
         return {
             inputUsername: '',
             inputPassword: ''
         }
-    }, setup() {
+    },
+    setup() {
         return {
             person,
             lockClosed,
             chevronBack
         }
-    }, methods: {
+    },
+    methods: {
         login() {
             if (this.inputUsername === '') {
                 this.toastMessage('Invalid Username or Password!');
@@ -80,15 +82,8 @@ export default defineComponent({
                 axios.post("http://localhost/crud/login.php", null, { params: { "username": this.inputUsername, "passcode": this.inputPassword } })
                     .then((response) => {
                         if (response.data.message == "success") {
-                            if (response.data.accountType == "admin") {
-                                alert("Login Successfully!")
-                                alert(response.data.accountType)
-                                this.$router.push('/main:id');
-                            } else {
-                                alert("Hello Admin!")
-                                this.$router.push('/main:id');
-                            }
-
+                            alert("Login Successfully!")
+                            this.$router.push('/main');
                         } else {
                             alert("Invalid Username or Password!")
                         }
@@ -108,15 +103,27 @@ export default defineComponent({
                     role: 'cancel'
                 }],
                 position: 'top'
-
             });
 
             return toast.present();
         }
     }
 });
-
 </script>
+
+<style scoped>
+ion-avatar {
+    --border-radius: 4px;
+    margin-top: 20px;
+    width: 75%;
+    height: 100%;
+}
+</style>
+
+
+
+
+
 
 <style scoped>
 ion-avatar {

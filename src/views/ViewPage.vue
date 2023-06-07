@@ -54,81 +54,80 @@
                 <ion-buttons slot="start">
                     <ion-menu-button></ion-menu-button>
                 </ion-buttons>
-                <ion-title>Rent'n Go</ion-title> <!--edit name of app-->
+                <ion-title>Rent'n Go</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+
             <center>
                 <ion-avatar>
                     <img src="/assets/logo.png">
                 </ion-avatar>
-                <ion-text>
-                    <h1>Car List</h1>
-                </ion-text>
             </center>
-            <ion-list>
-                <ion-item-group v-for="item, i in cars.Car" v-bind:key="item" @click="goToCarInfo(item.id)">
-                    <ion-item :href="`${'/view/' + item.id}`" lines="full" detail="true" button>
-                        <ion-chip :outline="true" color="primary" slot="start">
-                            {{ i + 1 }}
-                        </ion-chip>
-                        <ion-label>{{ item.model }}<br /><small>{{ item.brand }}</small><br /><small>{{
-                            item.plateNum }}</small></ion-label>
+            <ion-card v-if="carInfo">
+                <ion-card-header color="secondary">
+                    <ion-text>Car Information:</ion-text>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-item>
+                        <ion-text>Horsepower: {{ carInfo.horsepower }}</ion-text>
                     </ion-item>
-                </ion-item-group>
-            </ion-list>
-
-
+                    <ion-item>
+                        <ion-text>Engine: {{ carInfo.engine_ }}</ion-text>
+                    </ion-item>
+                    <ion-item>
+                        <ion-text>Transmission: {{ carInfo.transmission }}</ion-text>
+                    </ion-item>
+                    <ion-item>
+                        <ion-text>Seatcap: {{ carInfo.seatcap }}</ion-text>
+                    </ion-item>
+                    <ion-item>
+                        <ion-text>Fuel Type: {{ carInfo.fueltype }}</ion-text>
+                    </ion-item>
+                </ion-card-content>
+            </ion-card>
 
         </ion-content>
 
 
     </ion-page>
 </template>
-  
 <script setup lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRouterOutlet, IonMenuButton, IonMenu, IonButton, alertController } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardHeader, IonCardContent, IonItem, IonText } from '@ionic/vue';
 import { logInOutline, personAddOutline, shieldHalf, homeOutline, pencil, trash } from 'ionicons/icons';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
-const cars = reactive({
-    Car: []
+const params = useRouter().currentRoute.value.params;
+const id = params.id.toString();
 
-})
+const carInfo = reactive({
+    horsepower: '',
+    engine_: '',
+    transmission: '',
+    seatcap: '',
+    fueltype: '',
+});
 
-async function toastMessage(txt: string) {
-
-    const toast = await toastController.create({
-        message: txt.toString(),
-        duration: 2000,
-        position: "middle"
-    });
-
-    return toast.present();
-
-}
-
-
-function loadRecord() {
-    axios.get("http://localhost/crud/cars.php")
+function getCarInfo() {
+    axios.get("http://localhost/crud/car_details.php", { params: { recordid: id } })
         .then((response) => {
-            cars.Car = response.data;
-            console.log(cars.Car);
+            const [car] = response.data;
+            carInfo.horsepower = car.horsepower;
+            carInfo.engine_ = car.engine_;
+            carInfo.transmission = car.transmission;
+            carInfo.seatcap = car.seatcap;
+            carInfo.fueltype = car.fueltype;
+        })
+        .catch((error) => {
+            console.error(error);
         });
 }
 
 onMounted(() => {
-    loadRecord();
+    getCarInfo();
 });
-
-
-function goToCarInfo(carId) {
-    router.push(`/view/${carId}`);
-}
-
-
 </script>
   
 <style scoped>
