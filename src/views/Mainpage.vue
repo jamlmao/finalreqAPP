@@ -79,8 +79,6 @@
                         <ion-button @click="goToCarInfo(item.id)" color="success">
                             <ion-icon slot="icon-only" :src="eye"></ion-icon>
                         </ion-button>
-                        <ion-button color="danger" @click="goToCarRent(item.id)"><ion-icon slot="icon-only"
-                                :src="carSport"></ion-icon></ion-button>
                     </ion-item-options>
 
 
@@ -131,8 +129,9 @@ function loadRecord() {
 
 
 function goToCarInfo(carId) {
-    router.push(`/view/${carId}`);
+    router.push(`/rent/${carId}`);
 }
+
 function goToCarRent(carId) {
     router.push(`/rent/${carId}`);
 }

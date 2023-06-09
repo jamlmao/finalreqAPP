@@ -3,9 +3,8 @@ import { RouteRecordRaw } from 'vue-router';
 import login from '../views/LoginPage.vue'
 import register from '../views/register.vue'
 import MainPage from '../views/Mainpage.vue'
-import ViewPage from '../views/Viewpage.vue'
-import RentingPage from '../views/RentingPage.vue'
-
+import RentPage from '../views/RentPage.vue'
+import RentConfirmation from '../views/RentConfirmation.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -27,14 +26,14 @@ const routes: Array<RouteRecordRaw> = [
     component: MainPage
   },
   {
-    path: '/view/:id',
-    name: 'View',
-    component: ViewPage
+    path: '/rent/:id',
+    name: 'RentPage',
+    component: RentPage
   },
   {
-    path: '/rent/:id',
-    name: 'rent',
-    component: RentingPage
+    path: '/rent/confirmation',
+    name: 'RentConfirmation',
+    component: RentConfirmation
   }
 ]
 
