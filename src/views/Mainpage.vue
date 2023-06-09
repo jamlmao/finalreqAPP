@@ -34,10 +34,10 @@
 
             <ion-list>
                 <ion-item>
-                    <ion-icon :src="homeOutline" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" href="/">
+                    <ion-icon :src="logOutOutline" size="large"></ion-icon>
+                    <ion-button expand="block" size="default" @click="logout()">
                         <ion-label>
-                            Go back
+                            Log Out
                         </ion-label>
                     </ion-button>
                 </ion-item>
@@ -97,7 +97,7 @@
   
 <script setup lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRouterOutlet, IonMenuButton, IonMenu, IonButton, alertController } from '@ionic/vue';
-import { logInOutline, personAddOutline, shieldHalf, homeOutline, eye, carSport } from 'ionicons/icons';
+import { logInOutline, personAddOutline, shieldHalf, homeOutline, eye, carSport, logOutOutline } from 'ionicons/icons';
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -135,6 +135,12 @@ function goToCarInfo(carId) {
 }
 function goToCarRent(carId) {
     router.push(`/rent/${carId}`);
+}
+
+
+function logout() {
+    localStorage.removeItem("token")
+    router.push("/login");
 }
 
 onMounted(() => {

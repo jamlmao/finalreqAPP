@@ -9,7 +9,6 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-
             <center>
                 <ion-avatar>
                     <img src="/assets/logo.png">
@@ -27,11 +26,6 @@
                     </ion-item>
                 </ion-card-content>
             </ion-card>
-
-
-
-
-
             <ion-card v-if="carInfo" color="secondary">
                 <ion-card-header>
                     <ion-text>Car Information:</ion-text>
@@ -54,20 +48,18 @@
                     </ion-item>
                 </ion-card-content>
             </ion-card>
-
-            <ion-button v-if="carInfo" expand="block" size="default" @click="handleRentButton" :disabled="buttonDisabled">
+            <ion-button v-if="carInfo" expand="block" size="default"
+                :disabled="buttonDisabled.rent || buttonDisabled.unrent" @click="handleRentButton">
                 <ion-label>
-                    {{ rentButtonLabel }}
+                    {{ carInfo.status === 'Occupied' ? 'Unrent' : 'Rent' }}
                 </ion-label>
             </ion-button>
-
         </ion-content>
-
-
     </ion-page>
 </template>
+  
 <script setup lang="ts">
-import { IonPage, IonContent, IonCard, IonCardHeader, IonCardContent, IonItem, IonText } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardHeader, IonCardContent, IonItem, IonText, alertController } from '@ionic/vue';
 import { logInOutline, personAddOutline, shieldHalf, homeOutline, chevronBack } from 'ionicons/icons';
 import { onMounted, reactive, ref, watch } from 'vue';
 import axios from 'axios';
@@ -76,9 +68,10 @@ import { useRouter } from 'vue-router';
 const params = useRouter().currentRoute.value.params;
 const id = params.id.toString();
 
-const buttonDisabled = ref(false);
-let rentButtonLabel = 'Rent';
-
+const buttonDisabled = reactive({
+    rent: false,
+    unrent: false,
+});
 
 const carInfo = reactive({
     horsepower: '',
@@ -94,9 +87,9 @@ const carmodel = reactive({
     brand: '',
 });
 
-
 function getCarInfo() {
-    axios.get("http://localhost/crud/car_details.php", { params: { recordid: id } })
+    axios
+        .get('http://localhost/crud/car_details.php', { params: { recordid: id } })
         .then((response) => {
             const [car] = response.data;
             carInfo.horsepower = car.horsepower;
@@ -104,9 +97,9 @@ function getCarInfo() {
             carInfo.transmission = car.transmission;
             carInfo.seatcap = car.seatcap;
             carInfo.fueltype = car.fueltype;
-            setRentButtonLabel();
+
             if (sessionStorage.getItem('rentedCar')) {
-                buttonDisabled.value = true;
+                buttonDisabled.rent = true;
                 carInfo.status = 'Occupied';
             }
         })
@@ -115,82 +108,111 @@ function getCarInfo() {
         });
 }
 
-
-
 function getCar() {
-    axios.get("http://localhost/crud/car_rentingpage.php", { params: { recordid: id } })
+    axios
+        .get('http://localhost/crud/car_rentingpage.php', { params: { recordid: id } })
         .then((response) => {
             const [cars] = response.data;
-            carmodel.brand = cars.brand
-            carmodel.model = cars.model
+            carmodel.brand = cars.brand;
+            carmodel.model = cars.model;
         })
         .catch((error) => {
             console.error(error);
         });
 }
 
-function handleRentButton() {
+async function handleRentButton() {
+    let message = '';
+    let status = '';
+
     if (carInfo.status !== 'Available') {
-        unrentCar();
+        message = 'Are you sure you want to unrent this car?';
+        status = 'Available';
     } else {
-        rentCar();
+        message = 'Are you sure you want to rent this car?';
+        status = 'Occupied';
+    }
+
+    const confirmed = await showConfirmationAlert(message);
+
+    if (confirmed) {
+        buttonDisabled.rent = true;
+        axios
+            .post('http://localhost/crud/car_status.php', { carID: id, status })
+            .then((response) => {
+                carInfo.status = status;
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+            .finally(() => {
+                buttonDisabled.rent = false;
+                buttonDisabled.unrent = false;
+            });
     }
 }
-function rentCar() {
-    buttonDisabled.value = true;
-    axios.post("http://localhost/crud/car_status.php", { carID: id, status: 'Occupied' })
-        .then((response) => {
-            carInfo.status = 'Occupied';
-            setRentButtonLabel();
-            console.log(response.data);
-        })
-        .catch((error) => {
-            console.error(error);
-        })
-        .finally(() => {
-            buttonDisabled.value = false;
-        });
 
-}
-
-function unrentCar() {
-    buttonDisabled.value = true;
-    axios.post("http://localhost/crud/car_status.php", { carID: id, status: 'Available' })
+function handleUnrentButton() {
+    buttonDisabled.unrent = true;
+    axios
+        .post('http://localhost/crud/car_status.php', { carID: id, status: 'Available' })
         .then((response) => {
             carInfo.status = 'Available';
-            setRentButtonLabel();
             console.log(response.data);
         })
         .catch((error) => {
             console.error(error);
         })
         .finally(() => {
-            buttonDisabled.value = false;
+            buttonDisabled.rent = false;
+            buttonDisabled.unrent = false;
         });
 
     sessionStorage.removeItem('rentedCar');
 }
 
+async function showConfirmationAlert(message) {
+    const alert = await alertController.create({
+        header: 'Confirm',
+        message: message,
+        buttons: [
+            {
+                text: 'Cancel',
+                role: 'cancel',
+                handler: () => {
+                    console.log('Cancel clicked');
+                },
+            },
+            {
+                text: 'Confirm',
+                handler: () => {
+                    console.log('Confirm clicked');
+                },
+            },
+        ],
+    });
+
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+
+    return role === 'confirm';
+}
 
 function setRentButtonLabel() {
     rentButtonLabel = carInfo.status === 'Occupied' ? 'Unrent' : 'Rent';
 }
 
 watch(carInfo, () => {
-    buttonDisabled.value = carInfo.status === 'Occupied';
+    buttonDisabled.rent = carInfo.status === 'Occupied';
 });
 
 onMounted(() => {
     getCarInfo();
     getCar();
 });
-
-
-
-
-
 </script>
-  
+
 <style scoped>
 ion-avatar {
     --border-radius: 4px;

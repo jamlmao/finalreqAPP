@@ -15,6 +15,11 @@
                 <ion-avatar>
                     <img src="/assets/logo.png">
                 </ion-avatar>
+                <ion-text>
+                    <h1>
+                        <bold>Good Day Gearheads!</bold>
+                    </h1>
+                </ion-text>
             </center>
 
             <ion-item>
@@ -29,6 +34,11 @@
 
             <center>
                 <ion-button shape="round" expand="full" @click="login()">Login</ion-button>
+                <ion-button shape="round" color="medium" expand="full" size="default" href="/reg">
+                    <ion-label>
+                        <p>Create Account</p>
+                    </ion-label>
+                </ion-button>
             </center>
         </ion-content>
     </ion-page>
@@ -51,17 +61,16 @@ const user = reactive(
 )
 
 function login() {
-
     axios.post("http://localhost/crud/login.php", user)
         .then(async (response) => {
             if (response.data.status == 1) {
-
-                if (response.data.accounttype == "User") {
-                    router.push("/main");
+                localStorage.setItem("token", user.username);
+                const userId = response.data.id;
+                if (response.data.accounttype == "Admin") {
+                    router.push(`/main`);
                 } else {
-                    router.push("/home");
+                    router.push("/login");
                 }
-
             } else {
                 const alert = await alertController.create({
                     header: "Login Failed",
@@ -77,14 +86,12 @@ function login() {
                 });
 
                 alert.present();
-
             }
         })
         .catch((error) => {
             console.log("Error");
         });
 }
-
 
 
 </script>
