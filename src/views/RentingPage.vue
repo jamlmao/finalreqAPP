@@ -59,7 +59,7 @@
 </template>
   
 <script setup lang="ts">
-import { IonPage, IonContent, IonCard, IonCardHeader, IonCardContent, IonItem, IonText, alertController } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardHeader, IonCardContent, IonItem, IonText } from '@ionic/vue';
 import { logInOutline, personAddOutline, shieldHalf, homeOutline, chevronBack } from 'ionicons/icons';
 import { onMounted, reactive, ref, watch } from 'vue';
 import axios from 'axios';
@@ -121,35 +121,30 @@ function getCar() {
         });
 }
 
-async function handleRentButton() {
-    let message = '';
-    let status = '';
-
+function handleRentButton() {
     if (carInfo.status !== 'Available') {
-        message = 'Are you sure you want to unrent this car?';
-        status = 'Available';
+        const confirmed = window.confirm('Are you sure you want to unrent this car?');
+        if (confirmed) {
+            handleUnrentButton();
+        }
     } else {
-        message = 'Are you sure you want to rent this car?';
-        status = 'Occupied';
-    }
-
-    const confirmed = await showConfirmationAlert(message);
-
-    if (confirmed) {
-        buttonDisabled.rent = true;
-        axios
-            .post('http://localhost/crud/car_status.php', { carID: id, status })
-            .then((response) => {
-                carInfo.status = status;
-                console.log(response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-            .finally(() => {
-                buttonDisabled.rent = false;
-                buttonDisabled.unrent = false;
-            });
+        const confirmed = window.confirm('Are you sure you want to rent this car?');
+        if (confirmed) {
+            buttonDisabled.rent = true;
+            axios
+                .post('http://localhost/crud/car_status.php', { carID: id, status: 'Occupied' })
+                .then((response) => {
+                    carInfo.status = 'Occupied';
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    buttonDisabled.rent = false;
+                    buttonDisabled.unrent = false;
+                });
+        }
     }
 }
 
@@ -172,33 +167,6 @@ function handleUnrentButton() {
     sessionStorage.removeItem('rentedCar');
 }
 
-async function showConfirmationAlert(message) {
-    const alert = await alertController.create({
-        header: 'Confirm',
-        message: message,
-        buttons: [
-            {
-                text: 'Cancel',
-                role: 'cancel',
-                handler: () => {
-                    console.log('Cancel clicked');
-                },
-            },
-            {
-                text: 'Confirm',
-                handler: () => {
-                    console.log('Confirm clicked');
-                },
-            },
-        ],
-    });
-
-    await alert.present();
-    const { role } = await alert.onDidDismiss();
-
-    return role === 'confirm';
-}
-
 function setRentButtonLabel() {
     rentButtonLabel = carInfo.status === 'Occupied' ? 'Unrent' : 'Rent';
 }
@@ -212,7 +180,7 @@ onMounted(() => {
     getCar();
 });
 </script>
-
+  
 <style scoped>
 ion-avatar {
     --border-radius: 4px;
