@@ -19,103 +19,74 @@
 
             <ion-item>
                 <ion-icon :src="person"></ion-icon>
-                <ion-input type="text" v-model="inputUsername" placeholder="Username"></ion-input>
+                <ion-input v-model="user.username" placeholder="Username"></ion-input>
             </ion-item>
 
             <ion-item>
                 <ion-icon :src="lockClosed"></ion-icon>
-                <ion-input type="password" v-model="inputPassword" placeholder="Password"></ion-input>
+                <ion-input v-model="user.password" type="password" placeholder="Passcode"></ion-input>
             </ion-item>
 
             <center>
-                <ion-button shape="round" expand="full" @click="login">Login</ion-button>
-                <ion-button shape="round" expand="full" fill="outline" href="/reg">Sign Up</ion-button>
+                <ion-button shape="round" expand="full" @click="login()">Login</ion-button>
             </center>
         </ion-content>
     </ion-page>
 </template>
   
-<script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton, IonAvatar, IonItem, IonInput, toastController } from '@ionic/vue';
+<script setup lang="ts">
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton, IonAvatar, IonItem, IonInput, toastController, alertController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import axios from 'axios';
 import { logInOutline, personAddOutline, chevronBack, person, lockClosed } from 'ionicons/icons';
+import { reactive } from 'vue';
 import { RouteRecord } from 'vue-router';
+import router from '@/router';
 
-export default defineComponent({
-    components: {
-        IonContent,
-        IonHeader,
-        IonPage,
-        IonTitle,
-        IonToolbar,
-        IonButton,
-        IonAvatar,
-        IonItem,
-        IonInput,
-    },
-    data() {
-        return {
-            inputUsername: '',
-            inputPassword: '',
-            isLoggedIn: false,
-        };
-    },
-    setup() {
-        return {
-            person,
-            lockClosed,
-            chevronBack,
-        };
-    },
-    created() {
-        this.isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Check if user is logged in on component creation
-    },
-    methods: {
-        login() {
-            if (this.inputUsername === '' || this.inputPassword === '') {
-                this.toastMessage('Invalid Username or Password!');
+const user = reactive(
+    {
+        username: "",
+        password: ""
+    }
+)
+
+function login() {
+
+    axios.post("http://localhost/crud/login.php", user)
+        .then(async (response) => {
+            if (response.data.status == 1) {
+
+                if (response.data.accounttype == "User") {
+                    router.push("/main");
+                } else {
+                    router.push("/home");
+                }
+
             } else {
-                axios
-                    .post('http://localhost/crud/login.php', null, {
-                        params: { username: this.inputUsername, passcode: this.inputPassword },
-                    })
-                    .then((response) => {
-                        if (response.data.message === 'success') {
-                            this.isLoggedIn = true; // Set isLoggedIn to true
-                            localStorage.setItem('isLoggedIn', 'true'); // Save isLoggedIn to localStorage
-                            this.toastMessage('Login Successful!');
-                            this.$router.push('/main');
-                        } else {
-                            this.toastMessage('Invalid Username or Password!');
+                const alert = await alertController.create({
+                    header: "Login Failed",
+                    message: "Invalid username and password!",
+                    buttons: [
+                        {
+                            text: "Ok",
+                            handler: () => {
+                                alert.dismiss();
+                            }
                         }
-                    })
-                    .catch(function (error) {
-                        alert(error);
-                    });
-            }
-        },
-        async toastMessage(txt) {
-            const toast = await toastController.create({
-                message: txt.toString(),
-                duration: 2000,
-                buttons: [
-                    {
-                        side: 'end',
-                        text: 'Close',
-                        role: 'cancel',
-                    },
-                ],
-                position: 'top',
-            });
+                    ]
+                });
 
-            return toast.present();
-        },
-        goBack() {
-            this.$router.back();
-        },
-    },
-});
+                alert.present();
+
+            }
+        })
+        .catch((error) => {
+            console.log("Error");
+        });
+}
+
+
+
 </script>
   
 <style scoped>

@@ -10,7 +10,7 @@ import RentingPage from '../views/RentingPage.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/Login'
+    redirect: '/login'
   },
   {
     path: '/home',
@@ -43,6 +43,9 @@ const routes: Array<RouteRecordRaw> = [
     component: RentingPage
   }
 ]
+
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
