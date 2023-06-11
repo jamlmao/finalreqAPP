@@ -3,9 +3,11 @@ import { RouteRecordRaw } from 'vue-router';
 import login from '../views/LoginPage.vue'
 import register from '../views/register.vue'
 import MainPage from '../views/Mainpage.vue'
+import AvailableCars from '../views/AvailableCars.vue'
+import OccupiedList from '../views/OccupiedList.vue'
 import RentPage from '../views/RentPage.vue'
-import ProfilePage from '../views/ProfilePage.vue'
-import RentedCars from '../views/RentedCars.vue'
+import Unrentcar from '../views/Unrentcar.vue'
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -22,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     component: register
   },
   {
-    path: '/main', 
+    path: '/main',
     name: 'Main',
     component: MainPage
   },
@@ -32,21 +34,31 @@ const routes: Array<RouteRecordRaw> = [
     component: RentPage
   },
   {
-    path: '/profile',
-    name: 'Profile',
-    component: ProfilePage
+    path: '/rented',
+    name: 'OccupiedList',
+    component: OccupiedList
   },
   {
-    path: '/rented',
-    name: 'Rented',
-    component: RentedCars
-  }
+    path: '/rent',
+    name: 'AvailableCars',
+    component: AvailableCars
+  },
+   {
+    path: '/:catchAll(.*)',
+    redirect: '/main'
+  },
+  {
+    path: '/unrent/:id',
+    name: 'Unrentcar',
+    component: Unrentcar
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
+
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
@@ -59,8 +71,7 @@ router.beforeEach((to, from, next) => {
     next();
   }
 }) 
-/*
 
-*/
+
 
 export default router

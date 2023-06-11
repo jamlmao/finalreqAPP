@@ -107,7 +107,7 @@ export default defineComponent({
 
             return toast.present();
         },
-        // handler: this.navigateToOtherPage
+
 
         async toastMessage_alert(txt) {
             const toast = await toastController.create({

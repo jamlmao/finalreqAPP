@@ -7,7 +7,7 @@
                         <ion-icon :src="chevronBack"></ion-icon>
                     </ion-back-button>
                 </ion-buttons>
-                <ion-title>Rent</ion-title>
+                <ion-title>UnRent</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
@@ -49,8 +49,7 @@
                     </ion-item>
                 </ion-card-content>
             </ion-card>
-            <ion-button color="primary" shape="round" expand="full" size="default" @click="confirmRenting">Confirm
-                Rent</ion-button>
+            <ion-button color="danger" shape="round" expand="full" size="default" @click="Unrent">Unrent</ion-button>
         </ion-content>
     </ion-page>
 </template>
@@ -90,8 +89,8 @@ function getCarRented() {
             rentedCar.plateNum = cars.plateNum;
             rentedCar.status_ = cars.status_;
 
-            if (!checkCarAvailability() && cars.status_ === 'Occupied') {
-                showAlert('Sorry', 'The car is not available for rent.');
+            if (!checkCarAvailability() && cars.status_ === 'Available') {
+                showAlert('Sorry', 'The car is  available for rent.');
             }
         })
         .catch((error) => {
@@ -118,7 +117,6 @@ onMounted(() => {
     getCarInfo();
     getCarRented();
 });
-
 const showAlert = async (header, message) => {
     const alert = await alertController.create({
         header: header,
@@ -136,35 +134,34 @@ const showAlert = async (header, message) => {
     });
     await alert.present();
 };
-
 const brand = ref(sessionStorage.getItem('rentedCarBrand') || '');
 const model = ref(sessionStorage.getItem('rentedCarModel') || '');
 
-function confirmRenting() {
-    const isOccupied = checkCarAvailability();
+function Unrent() {
+    const isAvailable = checkCarAvailability();
 
-    if (isOccupied) {
+    if (isAvailable) {
         showAlert('Sorry', 'The car is already occupied.');
     } else {
-        const isAvailable = !isOccupied;
+        const isOccupied = !isAvailable;
 
-        if (isAvailable) {
+        if (isOccupied) {
             updateCarStatus();
-            showAlert('Success', 'Car rented successfully!');
+            showAlert('Success', 'Car unrent successfully!');
         } else {
-            showAlert('Sorry', 'The car is not available for rent.');
+            showAlert('Sorry', 'The car is available for rent.');
         }
     }
 }
 
 const checkCarAvailability = () => {
     const carStatus = rentedCar.status_ || '';
-    return carStatus === 'Occupied';
+    return carStatus === 'Available';
 };
 
 function updateCarStatus() {
     const carID = id;
-    const newStatus = 'Occupied';
+    const newStatus = 'Available';
 
     axios
         .post('http://localhost/crud/car_status.php', {
@@ -174,7 +171,7 @@ function updateCarStatus() {
         .then((response) => {
             if (response.data.success) {
                 rentedCar.status_ = newStatus;
-                showAlert('Success', 'Car rented successfully!');
+                showAlert('Success', 'Car unrent successfully!');
             } else {
                 showAlert('Error', 'Failed to update car status.');
             }

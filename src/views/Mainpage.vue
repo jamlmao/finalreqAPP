@@ -1,53 +1,4 @@
 <template>
-    <ion-menu content-id="main-content">
-        <ion-header>
-            <ion-toolbar color="primary">
-                <ion-text> Good Day Gearheads!</ion-text>
-            </ion-toolbar>
-        </ion-header>
-
-        <ion-content class="ion-padding">
-
-            <ion-list>
-                <ion-item>
-                    <ion-icon :src="logInOutline" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" href="/">
-                        <ion-label>
-                            Rent
-                        </ion-label>
-                    </ion-button>
-                </ion-item>
-            </ion-list>
-
-
-
-            <ion-list>
-                <ion-item>
-                    <ion-icon :src="shieldHalf" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" @click="goToProfile(item.id)">
-                        <ion-label>
-                            Profile
-                        </ion-label>
-                    </ion-button>
-                </ion-item>
-            </ion-list>
-
-            <ion-list>
-                <ion-item>
-                    <ion-icon :src="logOutOutline" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" @click="logout()">
-                        <ion-label>
-                            Log Out
-                        </ion-label>
-                    </ion-button>
-                </ion-item>
-            </ion-list>
-
-
-        </ion-content>
-    </ion-menu>
-
-
     <ion-page id="main-content">
         <ion-header>
             <ion-toolbar color="primary">
@@ -58,41 +9,37 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-            <center>
-                <ion-avatar>
+            <div id="container">
+                <center>
+
                     <img src="/assets/logo.png">
-                </ion-avatar>
-                <ion-text>
-                    <h1>Car List</h1>
-                </ion-text>
-            </center>
-            <ion-list>
-                <ion-item-sliding v-for="item, i in cars.Car" v-bind:key="item">
-                    <ion-item lines="full" detail="true">
-                        <ion-chip :outline="true" color="primary" slot="start">
-                            {{ i + 1 }}
-                        </ion-chip>
-                        <ion-label>{{ item.model }}<br /><small>{{ item.brand }}</small><br /><small>{{
-                            item.plateNum }}</small></ion-label>
-                    </ion-item>
-                    <ion-item-options>
-                        <ion-button @click="goToCarInfo(item.id)" color="success">
-                            <ion-icon slot="icon-only" :src="eye"></ion-icon>
-                        </ion-button>
-                    </ion-item-options>
+
+                    <ion-button @click="goToCar()" shape="round" expand="full" size="default">
+                        <ion-label>
+                            Rent a Car
+                        </ion-label>
+                    </ion-button>
 
 
-                </ion-item-sliding>
-            </ion-list>
+                    <ion-button shape="round" expand="full" size="default" @click="rentedCars()">
+                        <ion-label>
+                            Rented Cars
+                        </ion-label>
+                    </ion-button>
 
 
 
+                    <ion-button shape="round" expand="full" size="default" @click="logout()">
+                        <ion-label>
+                            Log Out
+                        </ion-label>
+                    </ion-button>
+                </center>
+            </div>
         </ion-content>
-
-
     </ion-page>
 </template>
-  
+
 <script setup lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRouterOutlet, IonMenuButton, IonMenu, IonButton, alertController } from '@ionic/vue';
 import { logInOutline, personAddOutline, shieldHalf, homeOutline, eye, carSport, logOutOutline } from 'ionicons/icons';
@@ -101,26 +48,15 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import router from '@/router';
 
-const cars = reactive({
-    Car: []
 
-})
 
-function loadRecord() {
-    axios.get("http://localhost/crud/cars.php")
-        .then((response) => {
-            cars.Car = response.data;
-            console.log(cars.Car);
-        });
+
+function goToCar() {
+    router.push("/rent");
 }
 
-
-function goToCarInfo(carId) {
-    router.push(`/rent/${carId}`);
-}
-
-function goToProfile(carId) {
-    router.push(`/profile/${carId}`);
+function rentedCars() {
+    router.push("/rented");
 }
 
 
@@ -130,19 +66,28 @@ function logout() {
     router.push("/login");
 }
 
-onMounted(() => {
-    loadRecord();
-});
-
-
 
 </script>
-  
+
 <style scoped>
-ion-avatar {
+#container {
     --border-radius: 4px;
-    margin-top: 20px;
-    width: 75%;
+    margin-top: 70px;
+    margin-left: 10%;
+    width: 80%;
+    height: 100%;
+}
+
+#container ion-avatar {
+    margin-bottom: 25px;
+}
+
+#container ion-button {
+    margin-bottom: 10px;
+}
+
+img {
+    width: 100%;
     height: 100%;
 }
 </style>
