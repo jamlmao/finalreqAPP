@@ -24,7 +24,7 @@
             <ion-list>
                 <ion-item>
                     <ion-icon :src="shieldHalf" size="large"></ion-icon>
-                    <ion-button expand="block" size="default" href="/">
+                    <ion-button expand="block" size="default" @click="goToProfile(item.id)">
                         <ion-label>
                             Profile
                         </ion-label>
@@ -54,7 +54,7 @@
                 <ion-buttons slot="start">
                     <ion-menu-button></ion-menu-button>
                 </ion-buttons>
-                <ion-title>Rent'n Go</ion-title> <!--edit name of app-->
+                <ion-title>Rent'n Go</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
@@ -68,7 +68,7 @@
             </center>
             <ion-list>
                 <ion-item-sliding v-for="item, i in cars.Car" v-bind:key="item">
-                    <ion-item :href="`${'/view/' + item.id}`" lines="full" detail="true" button>
+                    <ion-item lines="full" detail="true">
                         <ion-chip :outline="true" color="primary" slot="start">
                             {{ i + 1 }}
                         </ion-chip>
@@ -106,19 +106,6 @@ const cars = reactive({
 
 })
 
-async function toastMessage(txt: string) {
-
-    const toast = await toastController.create({
-        message: txt.toString(),
-        duration: 2000,
-        position: "middle"
-    });
-
-    return toast.present();
-
-}
-
-
 function loadRecord() {
     axios.get("http://localhost/crud/cars.php")
         .then((response) => {
@@ -132,9 +119,10 @@ function goToCarInfo(carId) {
     router.push(`/rent/${carId}`);
 }
 
-function goToCarRent(carId) {
-    router.push(`/rent/${carId}`);
+function goToProfile(carId) {
+    router.push(`/profile/${carId}`);
 }
+
 
 
 function logout() {

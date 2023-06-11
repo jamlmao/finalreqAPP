@@ -4,7 +4,8 @@ import login from '../views/LoginPage.vue'
 import register from '../views/register.vue'
 import MainPage from '../views/Mainpage.vue'
 import RentPage from '../views/RentPage.vue'
-import RentConfirmation from '../views/RentConfirmation.vue'
+import ProfilePage from '../views/ProfilePage.vue'
+import RentedCars from '../views/RentedCars.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -31,9 +32,14 @@ const routes: Array<RouteRecordRaw> = [
     component: RentPage
   },
   {
-    path: '/rent/confirmation',
-    name: 'RentConfirmation',
-    component: RentConfirmation
+    path: '/profile',
+    name: 'Profile',
+    component: ProfilePage
+  },
+  {
+    path: '/rented',
+    name: 'Rented',
+    component: RentedCars
   }
 ]
 
@@ -42,17 +48,19 @@ const router = createRouter({
   routes
 })
 
-   router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   
-  if (to.name !== 'Register'  && to.name !== 'Login' && token == null) {
+  if (to.name !== 'Register' && to.name !== 'Login' && token == null) {
     next({ name: 'Login' });
   } else if (to.name == 'Login' && token !== null) {
     next({ name: 'Main' });
   } else {
     next();
   }
-})
+}) 
+/*
 
+*/
 
 export default router
