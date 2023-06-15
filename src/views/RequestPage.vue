@@ -3,7 +3,7 @@
         <ion-header>
             <ion-toolbar color="primary">
                 <ion-text>
-                    <center>Good Day {{ loggedInUser.username }}!</center>
+                    <center>Good Day, {{ loggedInUser.username }}!</center>
                 </ion-text>
             </ion-toolbar>
         </ion-header>
@@ -23,16 +23,7 @@
 
 
 
-                <ion-list>
-                    <ion-item lines="none">
-                        <ion-icon :src="carSharp" size="large"></ion-icon>
-                        <ion-button shape="round" expand="block" size="default" href="/request">
-                            <ion-label>
-                                Check Status
-                            </ion-label>
-                        </ion-button>
-                    </ion-item>
-                </ion-list>
+
 
                 <ion-list>
                     <ion-item lines="none">
@@ -64,27 +55,33 @@
                     <img src="/assets/logo.png">
                 </ion-avatar>
                 <ion-text>
-                    <h1>Ready to Rent Cars</h1>
+
                 </ion-text>
             </center>
-            <ion-list>
-                <ion-item-sliding v-for="item, i in cars.Car" v-bind:key="item">
-                    <ion-item lines="full" detail="true">
-                        <ion-chip :outline="true" color="primary" slot="start">
-                            {{ i + 1 }}
-                        </ion-chip>
-                        <ion-label>{{ item.model }}<br /><small>{{ item.brand }}</small><br /><small>{{
-                            item.plateNum }}</small></ion-label>
+            <ion-card v-for="item, i in cars.Car" v-bind:key="item" color="primary">
+                <ion-card-header color="">
+                    <h1> <b>Waiting for Approval</b> </h1>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-item>
+                        <ion-label>
+                            <h1>Brand: <b> {{ item.brand }}</b></h1>
+                        </ion-label>
                     </ion-item>
-                    <ion-item-options>
-                        <ion-button @click="goToCarInfo(item.id)" color="success">
-                            <ion-icon slot="icon-only" :src="eye"></ion-icon>
-                        </ion-button>
-                    </ion-item-options>
+                    <ion-item>
+                        <ion-label>
+                            <h1> Model: <b> {{ item.model }}</b></h1>
+                        </ion-label>
+                    </ion-item>
 
+                    <ion-item>
+                        <ion-label>
+                            <h1> Status: <b> {{ item.status_ }}</b></h1>
+                        </ion-label>
+                    </ion-item>
 
-                </ion-item-sliding>
-            </ion-list>
+                </ion-card-content>
+            </ion-card>
 
 
 
@@ -106,46 +103,39 @@ const cars = reactive({
     Car: []
 
 })
+const loggedInUser = ref({ username: "" });
 
-const loggedInUser = ref({
-    username: "",
-    id: ""
-});
 
 
 function loadRecord() {
-    axios.get("http://localhost/crud/availableCars.php")
+    const token = localStorage.getItem("token");
+    axios
+        .get("http://localhost/crud/rented_cars.php", {
+            params: { userId: token },
+        })
         .then((response) => {
             cars.Car = response.data;
             console.log(cars.Car);
+            console.log(token)
         });
 }
-
-
-function goToCarInfo(carId) {
-    router.push(`/rent/${carId}`);
-}
-
-function goToProfile(carId) {
-    router.push(`/profile/${carId}`);
-}
-
-
 
 function logout() {
     localStorage.removeItem("token")
     router.push("/login");
 }
 
+
 onMounted(() => {
     const token = localStorage.getItem("token");
     if (token) {
-        loggedInUser.value.id = token;
+        loggedInUser.value.username = token;
         loadRecord();
     } else {
         router.push("/login");
     }
 });
+
 
 
 </script>

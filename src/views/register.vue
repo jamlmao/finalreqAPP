@@ -21,6 +21,10 @@
                 <ion-input type="text" v-model="inputUser" placeholder="Username"></ion-input>
             </ion-item>
             <ion-item>
+                <ion-label position="floating">Contact Number:</ion-label>
+                <ion-input type="tel" v-model="inputContact" placeholder="Contact"></ion-input>
+            </ion-item>
+            <ion-item>
                 <ion-label position="floating">Password:</ion-label>
                 <ion-input type="text" v-model="inputPass" placeholder="Password"></ion-input>
             </ion-item>
@@ -62,7 +66,8 @@ export default defineComponent({
         return {
             inputName: '',
             inputUser: '',
-            inputPass: ''
+            inputPass: '',
+            inputContact: ''
         }
     },
     methods: {
@@ -73,16 +78,17 @@ export default defineComponent({
                 this.toastMessage('Enter a valid username!');
             } else if (this.inputPass === '') {
                 this.toastMessage('Enter a valid password!');
+
+            } else if (this.inputContact === '') {
+                this.toastMessage('Enter a valid Contact Number!');
             } else {
-                axios.post("http://localhost/crud/signup.php", null, { params: { "name_": this.inputName, "username": this.inputUser, "passcode": this.inputPass } })
+                axios.post("http://localhost/crud/signup.php", null, { params: { "name_": this.inputName, "username": this.inputUser, "passcode": this.inputPass, "contactinfo": this.inputContact } })
                     .then((response) => {
                         if (response.data.message) {
                             this.inputName = "";
                             this.inputUser = "";
                             this.inputPass = "";
-
-
-
+                            this.inputContact = "";
                             this.toastMessage_alert("Your account has been recorded!")
                         } else {
                             this.toastMessage_alert("Unexpected Error!")

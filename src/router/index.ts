@@ -4,10 +4,10 @@ import login from '../views/LoginPage.vue'
 import register from '../views/register.vue'
 import MainPage from '../views/Mainpage.vue'
 import AvailableCars from '../views/AvailableCars.vue'
-import OccupiedList from '../views/OccupiedList.vue'
 import RentPage from '../views/RentPage.vue'
-import Unrentcar from '../views/Unrentcar.vue'
-
+import RequestPage from '../views/RequestPage.vue'
+import Profile from '../views/Profile.vue'
+import rentpaged from '../views/rentpaged.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -34,11 +34,6 @@ const routes: Array<RouteRecordRaw> = [
     component: RentPage
   },
   {
-    path: '/rented',
-    name: 'OccupiedList',
-    component: OccupiedList
-  },
-  {
     path: '/rent',
     name: 'AvailableCars',
     component: AvailableCars
@@ -46,12 +41,13 @@ const routes: Array<RouteRecordRaw> = [
    {
     path: '/:catchAll(.*)',
     redirect: '/main'
-  },
+  }, 
   {
-    path: '/unrent/:id',
-    name: 'Unrentcar',
-    component: Unrentcar
+    path: '/request',
+    name: 'RequestPage',
+    component: RequestPage
   },
+  
 ]
 
 const router = createRouter({

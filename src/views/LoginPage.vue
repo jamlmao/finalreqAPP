@@ -56,7 +56,8 @@ import router from '@/router';
 const user = reactive(
     {
         username: "",
-        password: ""
+        password: "",
+        id: ""
     }
 )
 
@@ -64,9 +65,10 @@ function login() {
     axios.post("http://localhost/crud/login.php", user)
         .then(async (response) => {
             if (response.data.status == 1) {
-                localStorage.setItem("token", user.username);
-                const userId = response.data.id;
-                if (response.data.accounttype == "Admin") {
+
+
+                if (response.data.accounttype == "User") {
+                    localStorage.setItem("token", user.username);
                     router.push(`/main`);
                 } else {
                     router.push("/login");

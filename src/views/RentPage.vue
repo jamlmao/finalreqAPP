@@ -17,7 +17,9 @@
                 </ion-card-header>
                 <ion-card-content>
                     <ion-item>
-                        <ion-label>Brand: {{ rentedCar.brand }}</ion-label>
+                        <ion-label>
+                            <h1><b>Brand: {{ rentedCar.brand }} </b></h1>
+                        </ion-label>
                     </ion-item>
                     <ion-item>
                         <ion-label>Model: {{ rentedCar.model }}</ion-label>
@@ -28,6 +30,7 @@
                     <ion-item>
                         <ion-label>Status: {{ rentedCar.status_ }}</ion-label>
                     </ion-item>
+
                 </ion-card-content>
             </ion-card>
             <ion-card v-if="carInfo" color="secondary">
@@ -49,7 +52,7 @@
                     </ion-item>
                 </ion-card-content>
             </ion-card>
-            <ion-button color="primary" shape="round" expand="full" size="default" @click="confirmRenting">Confirm
+            <ion-button color="primary" shape="round" expand="full" size="default" @click="confirmRenting">Request Car to
                 Rent</ion-button>
         </ion-content>
     </ion-page>
@@ -79,7 +82,35 @@ const rentedCar = reactive({
     model: '',
     plateNum: '',
     status_: '',
+    rentTime: '',
 });
+
+
+function updateUserId() {
+    const carID = id;
+    const token = localStorage.getItem("token");
+
+    axios
+        .post('http://localhost/crud/update_user_id.php', {
+            params: { carID: carID, userId: token },
+        })
+        .then((response) => {
+            if (response.data.success) {
+
+                rentedCar.userID = userID;
+            } else {
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            showAlert('Error', 'An error occurred while updating the user ID.');
+        });
+}
+
+
+
+
+
 
 function getCarRented() {
     axios.get("http://localhost/crud/car_detailsR.php", { params: { recordid: id } })
@@ -89,8 +120,8 @@ function getCarRented() {
             rentedCar.model = cars.model;
             rentedCar.plateNum = cars.plateNum;
             rentedCar.status_ = cars.status_;
-
-            if (!checkCarAvailability() && cars.status_ === 'Occupied') {
+            rentedCar.rentTime = cars.rentTime;
+            if (!checkCarAvailability() && cars.status_ === 'Pending') {
                 showAlert('Sorry', 'The car is not available for rent.');
             }
         })
@@ -119,52 +150,97 @@ onMounted(() => {
     getCarRented();
 });
 
-const showAlert = async (header, message) => {
-    const alert = await alertController.create({
-        header: header,
-        message: message,
-        buttons: [
-            {
-                text: "Ok",
-                handler: () => {
-                    alert.dismiss().then(() => {
-                        router.go(-1);
-                    });
-                }
-            }
-        ],
-    });
-    await alert.present();
-};
+let isCanceled = false;
 
-const brand = ref(sessionStorage.getItem('rentedCarBrand') || '');
-const model = ref(sessionStorage.getItem('rentedCarModel') || '');
+async function confirmRenting() {
 
-function confirmRenting() {
     const isOccupied = checkCarAvailability();
-
     if (isOccupied) {
-        showAlert('Sorry', 'The car is already occupied.');
+        try {
+            await showAlert('Sorry', 'The car is already occupied.');
+            return;
+        } catch (error) {
+            console.log(error);
+            return;
+        }
     } else {
         const isAvailable = !isOccupied;
 
         if (isAvailable) {
-            updateCarStatus();
-            showAlert('Success', 'Car rented successfully!');
+
+            if (isCanceled) {
+                return;
+            }
+
+            const showAlert = async (header, message) => {
+                return new Promise((resolve, reject) => {
+                    const alert = alertController.create({
+                        header: header,
+                        message: message,
+                        buttons: [
+                            {
+                                text: "Cancel",
+                                role: "cancel",
+                                handler: () => {
+                                    alert.dismiss();
+                                    isCanceled = true;
+                                    reject("Function canceled");
+                                }
+                            },
+                            {
+                                text: "Ok",
+                                handler: () => {
+                                    alert.dismiss().then(() => {
+                                        router.go(-1);
+                                        resolve();
+                                        updateUserId();
+                                        updateCarStatus();
+                                    });
+                                }
+                            }
+                        ],
+                    }).then(alert => {
+                        alert.present();
+                    });
+                });
+            };
+
+
+
+            try {
+
+
+                await showAlert('Success', 'Car request sent successfully!');
+                return;
+            } catch (error) {
+                console.log(error);
+                return;
+            }
         } else {
-            showAlert('Sorry', 'The car is not available for rent.');
+            try {
+                await showAlert('Sorry', 'The car is not available for rent.');
+                return;
+            } catch (error) {
+                console.log(error);
+                return;
+            }
         }
     }
 }
 
+
+
 const checkCarAvailability = () => {
     const carStatus = rentedCar.status_ || '';
-    return carStatus === 'Occupied';
+    return carStatus === 'Pending';
 };
+
+
+
 
 function updateCarStatus() {
     const carID = id;
-    const newStatus = 'Occupied';
+    const newStatus = 'Pending';
 
     axios
         .post('http://localhost/crud/car_status.php', {
@@ -174,9 +250,9 @@ function updateCarStatus() {
         .then((response) => {
             if (response.data.success) {
                 rentedCar.status_ = newStatus;
-                showAlert('Success', 'Car rented successfully!');
+
             } else {
-                showAlert('Error', 'Failed to update car status.');
+
             }
         })
         .catch((error) => {
@@ -184,5 +260,9 @@ function updateCarStatus() {
             showAlert('Error', 'An error occurred while updating car status.');
         });
 }
+
+
+
+
 </script>
   
