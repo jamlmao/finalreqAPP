@@ -22,6 +22,9 @@
                 </ion-text>
             </center>
 
+
+
+
             <ion-item>
                 <ion-icon :src="person"></ion-icon>
                 <ion-input v-model="user.username" placeholder="Username"></ion-input>
@@ -69,6 +72,7 @@ function login() {
 
                 if (response.data.accounttype == "User") {
                     localStorage.setItem("token", user.username);
+                    localStorage.setItem("uid", response.data.id);
                     router.push(`/main`);
                 } else {
                     router.push("/login");

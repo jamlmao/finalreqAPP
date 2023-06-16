@@ -65,18 +65,18 @@
                 <ion-card-content>
                     <ion-item>
                         <ion-label>
-                            <h1>Brand: <b> {{ item.brand }}</b></h1>
+                            <h3>Brand: <b> {{ item.brand }}</b></h3>
                         </ion-label>
                     </ion-item>
                     <ion-item>
                         <ion-label>
-                            <h1> Model: <b> {{ item.model }}</b></h1>
+                            <h3> Model: <b> {{ item.model }}</b></h3>
                         </ion-label>
                     </ion-item>
 
                     <ion-item>
                         <ion-label>
-                            <h1> Status: <b> {{ item.status_ }}</b></h1>
+                            <h3> Status: <b> {{ item.status_ }}</b></h3>
                         </ion-label>
                     </ion-item>
 
@@ -109,14 +109,15 @@ const loggedInUser = ref({ username: "" });
 
 function loadRecord() {
     const token = localStorage.getItem("token");
+    const uid = localStorage.getItem("uid")
     axios
         .get("http://localhost/crud/rented_cars.php", {
-            params: { userId: token },
+            params: { userId: uid },
         })
         .then((response) => {
             cars.Car = response.data;
             console.log(cars.Car);
-            console.log(token)
+            console.log(uid)
         });
 }
 

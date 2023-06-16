@@ -54,11 +54,12 @@ const loggedInUser = ref({ username: "", id: "" });
 
 onMounted(() => {
     const token = localStorage.getItem("token");
-
+    const uid = localStorage.getItem("uid")
     if (token) {
         loggedInUser.value.username = token;
+        loggedInUser.value.id = uid;
 
-        console.log(token)
+        console.log(uid)
     } else {
         router.push("/login");
     }

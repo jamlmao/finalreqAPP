@@ -89,15 +89,15 @@ const rentedCar = reactive({
 function updateUserId() {
     const carID = id;
     const token = localStorage.getItem("token");
-
+    const uid = localStorage.getItem("uid")
     axios
         .post('http://localhost/crud/update_user_id.php', {
-            params: { carID: carID, userId: token },
+            carID: carID,
+            userId: uid
         })
         .then((response) => {
             if (response.data.success) {
-
-                rentedCar.userID = userID;
+                console.log(carID)
             } else {
             }
         })
@@ -150,12 +150,13 @@ onMounted(() => {
     getCarRented();
 });
 
-let isCanceled = false;
+
 
 async function confirmRenting() {
 
     const isOccupied = checkCarAvailability();
     if (isOccupied) {
+
         try {
             await showAlert('Sorry', 'The car is already occupied.');
             return;
@@ -168,44 +169,8 @@ async function confirmRenting() {
 
         if (isAvailable) {
 
-            if (isCanceled) {
-                return;
-            }
-
-            const showAlert = async (header, message) => {
-                return new Promise((resolve, reject) => {
-                    const alert = alertController.create({
-                        header: header,
-                        message: message,
-                        buttons: [
-                            {
-                                text: "Cancel",
-                                role: "cancel",
-                                handler: () => {
-                                    alert.dismiss();
-                                    isCanceled = true;
-                                    reject("Function canceled");
-                                }
-                            },
-                            {
-                                text: "Ok",
-                                handler: () => {
-                                    alert.dismiss().then(() => {
-                                        router.go(-1);
-                                        resolve();
-                                        updateUserId();
-                                        updateCarStatus();
-                                    });
-                                }
-                            }
-                        ],
-                    }).then(alert => {
-                        alert.present();
-                    });
-                });
-            };
-
-
+            updateCarStatus();
+            updateUserId();
 
             try {
 
@@ -228,6 +193,24 @@ async function confirmRenting() {
     }
 }
 
+
+const showAlert = async (header, message) => {
+    const alert = await alertController.create({
+        header: header,
+        message: message,
+        buttons: [
+            {
+                text: "Ok",
+                handler: () => {
+                    alert.dismiss().then(() => {
+                        router.go(-1);
+                    });
+                }
+            }
+        ],
+    });
+    await alert.present();
+};
 
 
 const checkCarAvailability = () => {
