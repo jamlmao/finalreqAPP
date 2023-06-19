@@ -99,20 +99,24 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import router from '@/router';
 
+const params = useRouter().currentRoute.value.params;
+const id = params?.id?.toString() || '';
+
 const cars = reactive({
     Car: []
 
 })
-const loggedInUser = ref({ username: "" });
+const loggedInUser = ref({ id: "", username: "" });
 
 
 
 function loadRecord() {
+    const carID = id;
     const token = localStorage.getItem("token");
     const uid = localStorage.getItem("uid")
     axios
         .get("http://localhost/crud/rented_cars.php", {
-            params: { userId: uid },
+            params: { userId: uid, carID: id },
         })
         .then((response) => {
             cars.Car = response.data;

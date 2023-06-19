@@ -3,7 +3,7 @@
         <ion-header>
             <ion-toolbar color="primary">
                 <ion-text>
-                    <center>Good Day {{ loggedInUser.username }}!</center>
+                    <center>Good Day, {{ loggedInUser.username }}!</center>
                 </ion-text>
             </ion-toolbar>
         </ion-header>
@@ -140,7 +140,7 @@ function logout() {
 onMounted(() => {
     const token = localStorage.getItem("token");
     if (token) {
-        loggedInUser.value.id = token;
+        loggedInUser.value.username = token;
         loadRecord();
     } else {
         router.push("/login");

@@ -98,6 +98,7 @@ function updateUserId() {
         .then((response) => {
             if (response.data.success) {
                 console.log(carID)
+                console.log(uid)
             } else {
             }
         })
