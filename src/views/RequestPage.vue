@@ -58,33 +58,57 @@
 
                 </ion-text>
             </center>
-            <ion-card v-for="item, i in cars.Car" v-bind:key="item" color="primary">
-                <ion-card-header color="">
-                    <h1> <b>Waiting for Approval</b> </h1>
+
+            <ion-card v-for="item in cars.Car" :key="item.id" color="primary">
+                <ion-card-header>
+                    <h1><b>Waiting for Approval</b></h1>
                 </ion-card-header>
                 <ion-card-content>
                     <ion-item>
                         <ion-label>
-                            <h3>Brand: <b> {{ item.brand }}</b></h3>
+                            <h3>Brand: <b>{{ item.brand }}</b></h3>
                         </ion-label>
                     </ion-item>
                     <ion-item>
                         <ion-label>
-                            <h3> Model: <b> {{ item.model }}</b></h3>
+                            <h3>Model: <b>{{ item.model }}</b></h3>
                         </ion-label>
                     </ion-item>
-
                     <ion-item>
                         <ion-label>
-                            <h3> Status: <b> {{ item.status_ }}</b></h3>
+                            <h3>Status: <b>{{ item.status_ }}</b></h3>
                         </ion-label>
                     </ion-item>
-
                 </ion-card-content>
             </ion-card>
 
-
-
+            <ion-card v-for="item in  cars.ApprovedCars" :key="item.id" color="primary">
+                <ion-card-header>
+                    <h1><b>Approved cars</b></h1>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-item>
+                        <ion-label>
+                            <h3>Brand: <b>{{ item.brand }}</b></h3>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>
+                            <h3>Model: <b>{{ item.model }}</b></h3>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>
+                            <h3>Status: <b>{{ item.status_ }}</b></h3>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>
+                            <h3>Time Approved: <b>{{ item.approval_date }}</b></h3>
+                        </ion-label>
+                    </ion-item>
+                </ion-card-content>
+            </ion-card>
         </ion-content>
 
 
@@ -103,17 +127,17 @@ const params = useRouter().currentRoute.value.params;
 const id = params?.id?.toString() || '';
 
 const cars = reactive({
-    Car: []
+    Car: [],
+    ApprovedCars: []
+});
 
-})
+
 const loggedInUser = ref({ id: "", username: "" });
 
 
+function loadCars() {
+    const uid = localStorage.getItem("uid");
 
-function loadRecord() {
-    const carID = id;
-    const token = localStorage.getItem("token");
-    const uid = localStorage.getItem("uid")
     axios
         .get("http://localhost/crud/rented_cars.php", {
             params: { userId: uid, carID: id },
@@ -121,7 +145,17 @@ function loadRecord() {
         .then((response) => {
             cars.Car = response.data;
             console.log(cars.Car);
-            console.log(uid)
+            console.log(uid);
+        });
+
+    axios
+        .get("http://localhost/crud/approvedCars.php", {
+            params: { userId: uid, carID: id },
+        })
+        .then((response) => {
+            cars.ApprovedCars = response.data;
+            console.log(cars.ApprovedCars);
+            console.log(uid);
         });
 }
 
@@ -135,7 +169,7 @@ onMounted(() => {
     const token = localStorage.getItem("token");
     if (token) {
         loggedInUser.value.username = token;
-        loadRecord();
+        loadCars();
     } else {
         router.push("/login");
     }

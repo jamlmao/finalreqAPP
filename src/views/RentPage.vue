@@ -86,6 +86,9 @@ const rentedCar = reactive({
 });
 
 
+
+
+
 function updateUserId() {
     const carID = id;
     const token = localStorage.getItem("token");
@@ -152,12 +155,10 @@ onMounted(() => {
 });
 
 
-
 async function confirmRenting() {
-
     const isOccupied = checkCarAvailability();
-    if (isOccupied) {
 
+    if (isOccupied) {
         try {
             await showAlert('Sorry', 'The car is already occupied.');
             return;
@@ -169,17 +170,23 @@ async function confirmRenting() {
         const isAvailable = !isOccupied;
 
         if (isAvailable) {
+            const confirmed = await showConfirmationAlert(
+                'Confirmation',
+                'Are you sure you want to request the car to rent?'
+            );
 
-            updateCarStatus();
-            updateUserId();
+            if (confirmed) {
+                updateCarStatus();
+                updateUserId();
 
-            try {
-
-
-                await showAlert('Success', 'Car request sent successfully!');
-                return;
-            } catch (error) {
-                console.log(error);
+                try {
+                    await showAlert('Success', 'Car request sent successfully!');
+                    return;
+                } catch (error) {
+                    console.log(error);
+                    return;
+                }
+            } else {
                 return;
             }
         } else {
@@ -194,25 +201,26 @@ async function confirmRenting() {
     }
 }
 
-
-const showAlert = async (header, message) => {
-    const alert = await alertController.create({
-        header: header,
-        message: message,
-        buttons: [
-            {
-                text: "Ok",
-                handler: () => {
-                    alert.dismiss().then(() => {
-                        router.go(-1);
-                    });
+const showConfirmationAlert = async (header, message) => {
+    return new Promise(async (resolve) => {
+        const alert = await alertController.create({
+            header: header,
+            message: message,
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: () => resolve(false)
+                },
+                {
+                    text: 'OK',
+                    handler: () => resolve(true)
                 }
-            }
-        ],
+            ]
+        });
+        await alert.present();
     });
-    await alert.present();
 };
-
 
 const checkCarAvailability = () => {
     const carStatus = rentedCar.status_ || '';
